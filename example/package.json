@@ -1,0 +1,24 @@
+{
+  "name": "example",
+  "private": true,
+  "scripts": {
+    "cli": "./prisma/cli/bin/run",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@oclif/core": "^1.20.4",
+    "@prisma/client": "4.6.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^1.0.1",
+    "@types/node": "18.11.9",
+    "prisma": "4.6.1",
+    "prisma-generator-cli": "file:..",
+    "typescript": "4.9.3"
+  },
+  "oclif": {
+    "commands": "./prisma/cli/commands",
+    "topicSeparator": " "
+  }
+}

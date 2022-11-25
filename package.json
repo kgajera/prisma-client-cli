@@ -1,0 +1,65 @@
+{
+  "name": "prisma-generator-cli",
+  "description": "Generates a CLI from your Prisma schema that allows you to query, seed, and export data",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kgajera/prisma-generator-cli"
+  },
+  "author": {
+    "name": "Kishan Gajera",
+    "url": "https://github.com/kgajera"
+  },
+  "keywords": [
+    "prisma",
+    "generator",
+    "cli"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": "./dist/bin.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.mjs",
+      "require": "./dist/*.js"
+    }
+  },
+  "engines": {
+    "node": ">=14.0"
+  },
+  "scripts": {
+    "build": "tsup src/bin.ts src/index.ts --clean --format cjs,esm --dts-resolve",
+    "dev": "npm run build -- --watch",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "format:fix": "prettier --write \"src/**/*.ts\"",
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "@oclif/core": "^1.20.4"
+  },
+  "dependencies": {
+    "@prisma/generator-helper": "4.6.1",
+    "@prisma/internals": "^4.6.1",
+    "ts-morph": "^17.0.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/node": "18.11.9",
+    "prettier": "^2.8.0",
+    "prisma": "4.6.1",
+    "tsup": "^6.5.0",
+    "typescript": "4.9.3",
+    "vitest": "^0.25.3"
+  }
+}
