@@ -1,7 +1,7 @@
 {
   "name": "prisma-client-cli",
   "description": "Generates a CLI from your Prisma schema that allows you to query, seed, and export data",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "repository": {
     "type": "git",
