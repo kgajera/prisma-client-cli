@@ -1,0 +1,9 @@
+import { Command, Help } from "@oclif/core";
+
+export default class <%= modelName %>Command extends Command {
+  static hidden = true;
+
+  async run() {
+    new Help(this.config).showTopicHelp({ name: "<%= commandName %>" });
+  }
+}

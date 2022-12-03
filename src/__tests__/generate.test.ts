@@ -1,9 +1,18 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { getSampleDMMF } from "./__fixtures__/getSampleDMMF";
 import { generate } from "../generate";
+
+vi.mock("../utils/getTemplate", () => ({
+  getTemplate: async (name: string) => {
+    return await fs.promises.readFile(
+      path.join(__dirname, "..", "templates", `${name}.ejs`),
+      "utf-8"
+    );
+  },
+}));
 
 test("generate", async () => {
   const dmmf = await getSampleDMMF();
@@ -20,15 +29,15 @@ test("generate", async () => {
   } as any);
 
   [
-    "QueryCommand.js",
+    "QueryCommand.mjs",
     path.join("bin", "run"),
-    path.join("commands", "user", "index.js"),
-    path.join("commands", "user", "findMany.js"),
-    path.join("commands", "user", "deleteOne.js"),
+    path.join("commands", "user", "index.mjs"),
+    path.join("commands", "user", "findMany.mjs"),
+    path.join("commands", "user", "deleteOne.mjs"),
   ].forEach((file) => {
     const content = fs.readFileSync(path.resolve(tmpOutputDir, file), "utf-8");
     expect(content).toMatchSnapshot();
   });
 
   fs.rmSync(tmpOutputDir, { recursive: true, force: true });
-}, 10000);
+});

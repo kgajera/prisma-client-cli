@@ -1,11 +1,11 @@
 {
-  "name": "prisma-generator-cli",
+  "name": "prisma-client-cli",
   "description": "Generates a CLI from your Prisma schema that allows you to query, seed, and export data",
   "version": "0.1.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kgajera/prisma-generator-cli"
+    "url": "https://github.com/kgajera/prisma-client-cli"
   },
   "author": {
     "name": "Kishan Gajera",
@@ -39,7 +39,7 @@
     "node": ">=14.0"
   },
   "scripts": {
-    "build": "tsup src/bin.ts src/index.ts --clean --format cjs,esm --dts-resolve",
+    "build": "tsup src/bin.ts src/index.ts --format cjs,esm --dts-resolve --publicDir src/templates",
     "dev": "npm run build -- --watch",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "format:fix": "prettier --write \"src/**/*.ts\"",
@@ -49,15 +49,17 @@
     "@oclif/core": "^1.20.4"
   },
   "dependencies": {
-    "@prisma/generator-helper": "4.6.1",
-    "@prisma/internals": "^4.6.1",
-    "ts-morph": "^17.0.1"
+    "@prisma/generator-helper": "4.7.0",
+    "@prisma/internals": "^4.7.0",
+    "ejs": "^3.1.8"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/ejs": "^3.1.1",
     "@types/node": "18.11.9",
+    "@types/prettier": "^2.7.1",
     "prettier": "^2.8.0",
-    "prisma": "4.6.1",
+    "prisma": "4.7.0",
     "tsup": "^6.5.0",
     "typescript": "4.9.3",
     "vitest": "^0.25.3"

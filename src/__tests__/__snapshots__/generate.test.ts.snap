@@ -1,62 +1,67 @@
 // Vitest Snapshot v1
 
 exports[`generate 1`] = `
-"\\"use strict\\";
-Object.defineProperty(exports, \\"__esModule\\", { value: true });
-exports.QueryCommand = void 0;
-const core_1 = require(\\"@oclif/core\\");
-const client_1 = require(\\"@prisma/client\\");
-class QueryCommand extends core_1.Command {
-    async init() {
-        await super.init();
-        const { flags } = await this.parse(this.constructor);
-        this.flags = flags;
-    }
-    getQueryArgs() {
-        return Object.keys(this.flags).reduce((acc, path) => {
-            const keys = path.split('.');
-            let cur = acc;
-            if (path === \\"_csv\\") {
-                return acc;
-            }
-            keys.forEach((key, i) => {
-                if (i < keys.length - 1) {
-                    cur[key] = cur[key] || {};
-                    cur = cur[key];
-                }
-                else {
-                    cur[key] = this.flags[path];
-                }
-            });
-            return acc;
-        }, {});
-    }
-    async outputQueryResult(data) {
-        const isArray = Array.isArray(data);
-        if (data === null) {
-            console.log(\\"Record not found\\");
-            return;
+"import { CliUx, Command } from \\"@oclif/core\\";
+import { PrismaClient } from \\"@prisma/client\\";
+
+export class QueryCommand extends Command {
+  flags = {};
+  
+  async init() {
+    await super.init();
+    const { flags } = await this.parse(this.ctor);
+    this.flags = flags;
+  }
+
+  async query() {}
+
+  getQueryArgs() {
+    return Object.keys(this.flags).reduce((acc, path) => {
+      const keys = path.split('.');
+      let cur = acc;
+      if (path === \\"_csv\\") {
+        return acc;
+      }
+      keys.forEach((key, i) => {
+        if (i < keys.length - 1) {
+          cur[key] = cur[key] || {};
+          cur = cur[key];
         }
-        else if (isArray && data.length === 0) {
-            console.log(\\"No records found\\");
-            return;
+        else {
+          cur[key] = this.flags[path];
         }
-        const dataArray = isArray ? data : [data], keys = Object.keys(dataArray[0]), columns = {};
-        for (const key of keys) {
-            columns[key] = {};
-        }
-        core_1.CliUx.ux.table(dataArray, columns, { csv: this.flags[\\"_csv\\"] ?? false });
+      });
+      return acc;
+    }, {});
+  }
+
+  async outputQueryResult(data) {
+    const isArray = Array.isArray(data);
+    if (data === null) {
+      console.log(\\"Record not found\\");
+      return;
+    } else if (isArray && data.length === 0) {
+      console.log(\\"No records found\\");
+      return;
     }
-    async run() {
-        const client = new client_1.PrismaClient(), args = this.getQueryArgs(), result = await this.query(client, args);
-        this.outputQueryResult(result);
+
+    const dataArray = isArray ? data : [data];
+    const keys = Object.keys(dataArray[0]), columns = {};
+
+    for (const key of keys) {
+      columns[key] = {};
     }
-}
-exports.QueryCommand = QueryCommand;
-QueryCommand.globalFlags = {
-    _csv: core_1.Flags.boolean(),
-};
-"
+    
+    CliUx.ux.table(dataArray, columns, { csv: this.flags[\\"_csv\\"] ?? false });
+  }
+
+  async run() {
+    const client = new PrismaClient();
+    const args = this.getQueryArgs()
+    const result = await this.query(client, args);
+    this.outputQueryResult(result);
+  }
+}"
 `;
 
 exports[`generate 2`] = `
@@ -68,90 +73,109 @@ oclif.run().then(require('@oclif/core/flush')).catch(require('@oclif/core/handle
 `;
 
 exports[`generate 3`] = `
-"\\"use strict\\";
-Object.defineProperty(exports, \\"__esModule\\", { value: true });
-const core_1 = require(\\"@oclif/core\\");
-class UserCommand extends core_1.Command {
-    async run() {
-        const help = new core_1.Help(this.config);
-        help.showTopicHelp({ name: 'user' });
-    }
-}
-exports.default = UserCommand;
-UserCommand.hidden = true;
-"
+"import { Command, Help } from \\"@oclif/core\\";
+
+export default class UserCommand extends Command {
+  static hidden = true;
+
+  async run() {
+    new Help(this.config).showTopicHelp({ name: \\"user\\" });
+  }
+}"
 `;
 
 exports[`generate 4`] = `
-"\\"use strict\\";
-Object.defineProperty(exports, \\"__esModule\\", { value: true });
-const core_1 = require(\\"@oclif/core\\");
-const QueryCommand_1 = require(\\"../../QueryCommand\\");
-class UserFindMany extends QueryCommand_1.QueryCommand {
-    async query(client, args) {
-        return client.user.findMany(args);
-    }
-}
-exports.default = UserFindMany;
-UserFindMany.flags = {
-    ['where.id.equals']: core_1.Flags.integer({}),
-    ['where.id.in']: core_1.Flags.integer({}),
-    ['where.id.notIn']: core_1.Flags.integer({}),
-    ['where.id.lt']: core_1.Flags.integer({}),
-    ['where.id.lte']: core_1.Flags.integer({}),
-    ['where.id.gt']: core_1.Flags.integer({}),
-    ['where.id.gte']: core_1.Flags.integer({}),
-    ['where.id.not']: core_1.Flags.integer({}),
-    ['where.id']: core_1.Flags.integer({}),
-    ['where.email.equals']: core_1.Flags.string({}),
-    ['where.email.in']: core_1.Flags.string({}),
-    ['where.email.notIn']: core_1.Flags.string({}),
-    ['where.email.lt']: core_1.Flags.string({}),
-    ['where.email.lte']: core_1.Flags.string({}),
-    ['where.email.gt']: core_1.Flags.string({}),
-    ['where.email.gte']: core_1.Flags.string({}),
-    ['where.email.contains']: core_1.Flags.string({}),
-    ['where.email.startsWith']: core_1.Flags.string({}),
-    ['where.email.endsWith']: core_1.Flags.string({}),
-    ['where.email.not']: core_1.Flags.string({}),
-    ['where.email']: core_1.Flags.string({}),
-    ['where.name.equals']: core_1.Flags.string({}),
-    ['where.name.in']: core_1.Flags.string({}),
-    ['where.name.notIn']: core_1.Flags.string({}),
-    ['where.name.lt']: core_1.Flags.string({}),
-    ['where.name.lte']: core_1.Flags.string({}),
-    ['where.name.gt']: core_1.Flags.string({}),
-    ['where.name.gte']: core_1.Flags.string({}),
-    ['where.name.contains']: core_1.Flags.string({}),
-    ['where.name.startsWith']: core_1.Flags.string({}),
-    ['where.name.endsWith']: core_1.Flags.string({}),
-    ['where.name.not']: core_1.Flags.string({}),
-    ['where.name']: core_1.Flags.string({}),
-    ['where.profile.id']: core_1.Flags.integer({}),
-    ['where.profile.bio']: core_1.Flags.string({}),
-    ['where.profile.userId']: core_1.Flags.integer({}),
-    ['cursor.id']: core_1.Flags.integer({}),
-    ['cursor.email']: core_1.Flags.string({}),
-    ['take']: core_1.Flags.integer({}),
-    ['skip']: core_1.Flags.integer({}),
-};
-"
+"import { Flags } from \\"@oclif/core\\";
+import { QueryCommand } from \\"../../QueryCommand.mjs\\";
+
+export default class FindManyUserCommand extends QueryCommand {
+  static flags = {
+    _csv: Flags.boolean(),
+    [\\"where.id.equals\\"]: Flags.integer({}),
+    [\\"where.id.in\\"]: Flags.integer({}),
+    [\\"where.id.notIn\\"]: Flags.integer({}),
+    [\\"where.id.lt\\"]: Flags.integer({}),
+    [\\"where.id.lte\\"]: Flags.integer({}),
+    [\\"where.id.gt\\"]: Flags.integer({}),
+    [\\"where.id.gte\\"]: Flags.integer({}),
+    [\\"where.id.not\\"]: Flags.integer({}),
+    [\\"where.id\\"]: Flags.integer({}),
+    [\\"where.email.equals\\"]: Flags.string({}),
+    [\\"where.email.in\\"]: Flags.string({}),
+    [\\"where.email.notIn\\"]: Flags.string({}),
+    [\\"where.email.lt\\"]: Flags.string({}),
+    [\\"where.email.lte\\"]: Flags.string({}),
+    [\\"where.email.gt\\"]: Flags.string({}),
+    [\\"where.email.gte\\"]: Flags.string({}),
+    [\\"where.email.contains\\"]: Flags.string({}),
+    [\\"where.email.startsWith\\"]: Flags.string({}),
+    [\\"where.email.endsWith\\"]: Flags.string({}),
+    [\\"where.email.mode\\"]: Flags.enum({\\"options\\":[\\"default\\",\\"insensitive\\"]}),
+    [\\"where.email.not\\"]: Flags.string({}),
+    [\\"where.email\\"]: Flags.string({}),
+    [\\"where.name.equals\\"]: Flags.string({}),
+    [\\"where.name.in\\"]: Flags.string({}),
+    [\\"where.name.notIn\\"]: Flags.string({}),
+    [\\"where.name.lt\\"]: Flags.string({}),
+    [\\"where.name.lte\\"]: Flags.string({}),
+    [\\"where.name.gt\\"]: Flags.string({}),
+    [\\"where.name.gte\\"]: Flags.string({}),
+    [\\"where.name.contains\\"]: Flags.string({}),
+    [\\"where.name.startsWith\\"]: Flags.string({}),
+    [\\"where.name.endsWith\\"]: Flags.string({}),
+    [\\"where.name.mode\\"]: Flags.enum({\\"options\\":[\\"default\\",\\"insensitive\\"]}),
+    [\\"where.name.not\\"]: Flags.string({}),
+    [\\"where.name\\"]: Flags.string({}),
+    [\\"where.profile.id\\"]: Flags.integer({}),
+    [\\"where.profile.bio\\"]: Flags.string({}),
+    [\\"where.profile.userId\\"]: Flags.integer({}),
+    [\\"where.role.equals\\"]: Flags.enum({\\"options\\":[\\"ADMIN\\",\\"USER\\"]}),
+    [\\"where.role.in\\"]: Flags.enum({\\"options\\":[\\"ADMIN\\",\\"USER\\"]}),
+    [\\"where.role.notIn\\"]: Flags.enum({\\"options\\":[\\"ADMIN\\",\\"USER\\"]}),
+    [\\"where.role.not\\"]: Flags.enum({\\"options\\":[\\"ADMIN\\",\\"USER\\"]}),
+    [\\"where.role\\"]: Flags.enum({\\"options\\":[\\"ADMIN\\",\\"USER\\"]}),
+    [\\"orderBy.id\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.email\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.name\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.posts._count\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.profile.id\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.profile.bio\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.profile.userId\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.role\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.id\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.email\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.name\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.posts._count\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.profile.id\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.profile.bio\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.profile.userId\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"orderBy.role\\"]: Flags.enum({\\"options\\":[\\"asc\\",\\"desc\\"]}),
+    [\\"cursor.id\\"]: Flags.integer({}),
+    [\\"cursor.email\\"]: Flags.string({}),
+    [\\"take\\"]: Flags.integer({}),
+    [\\"skip\\"]: Flags.integer({}),
+    [\\"distinct\\"]: Flags.enum({\\"options\\":[\\"id\\",\\"email\\",\\"name\\",\\"role\\"]}),
+  };
+
+  async query(client, args) {
+    return client.user.findMany(args);
+  }
+}"
 `;
 
 exports[`generate 5`] = `
-"\\"use strict\\";
-Object.defineProperty(exports, \\"__esModule\\", { value: true });
-const core_1 = require(\\"@oclif/core\\");
-const QueryCommand_1 = require(\\"../../QueryCommand\\");
-class UserDeleteOne extends QueryCommand_1.QueryCommand {
-    async query(client, args) {
-        return client.user.delete(args);
-    }
-}
-exports.default = UserDeleteOne;
-UserDeleteOne.flags = {
-    ['where.id']: core_1.Flags.integer({}),
-    ['where.email']: core_1.Flags.string({}),
-};
-"
+"import { Flags } from \\"@oclif/core\\";
+import { QueryCommand } from \\"../../QueryCommand.mjs\\";
+
+export default class DeleteOneUserCommand extends QueryCommand {
+  static flags = {
+    _csv: Flags.boolean(),
+    [\\"where.id\\"]: Flags.integer({}),
+    [\\"where.email\\"]: Flags.string({}),
+  };
+
+  async query(client, args) {
+    return client.user.delete(args);
+  }
+}"
 `;

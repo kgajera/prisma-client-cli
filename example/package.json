@@ -8,13 +8,13 @@
   },
   "dependencies": {
     "@oclif/core": "^1.20.4",
-    "@prisma/client": "4.6.1"
+    "@prisma/client": "4.7.0"
   },
   "devDependencies": {
     "@tsconfig/node18": "^1.0.1",
     "@types/node": "18.11.9",
-    "prisma": "4.6.1",
-    "prisma-generator-cli": "file:..",
+    "prisma": "4.7.0",
+    "prisma-client-cli": "file:..",
     "typescript": "4.9.3"
   },
   "oclif": {

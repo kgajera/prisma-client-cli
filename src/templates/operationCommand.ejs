@@ -1,0 +1,15 @@
+import { Flags } from "@oclif/core";
+import { QueryCommand } from "../../QueryCommand.mjs";
+
+export default class <%= operationName %>Command extends QueryCommand {
+  static flags = {
+    _csv: Flags.boolean(),
+<% for (let i = 0; i < flags.length; i++) { -%>
+    ["<%= flags[i].name %>"]: Flags.<%= flags[i].type %>(<%- JSON.stringify(flags[i].flagOptions || {}) %>),
+<% } -%>
+  };
+
+  async query(client, args) {
+    return client.<%= clientModel %>.<%= clientOperation %>(args);
+  }
+}

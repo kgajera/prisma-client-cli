@@ -1,0 +1,61 @@
+import { CliUx, Command } from "@oclif/core";
+import { PrismaClient } from "@prisma/client";
+
+export class QueryCommand extends Command {
+  flags = {};
+  
+  async init() {
+    await super.init();
+    const { flags } = await this.parse(this.ctor);
+    this.flags = flags;
+  }
+
+  async query() {}
+
+  getQueryArgs() {
+    return Object.keys(this.flags).reduce((acc, path) => {
+      const keys = path.split('.');
+      let cur = acc;
+      if (path === "_csv") {
+        return acc;
+      }
+      keys.forEach((key, i) => {
+        if (i < keys.length - 1) {
+          cur[key] = cur[key] || {};
+          cur = cur[key];
+        }
+        else {
+          cur[key] = this.flags[path];
+        }
+      });
+      return acc;
+    }, {});
+  }
+
+  async outputQueryResult(data) {
+    const isArray = Array.isArray(data);
+    if (data === null) {
+      console.log("Record not found");
+      return;
+    } else if (isArray && data.length === 0) {
+      console.log("No records found");
+      return;
+    }
+
+    const dataArray = isArray ? data : [data];
+    const keys = Object.keys(dataArray[0]), columns = {};
+
+    for (const key of keys) {
+      columns[key] = {};
+    }
+    
+    CliUx.ux.table(dataArray, columns, { csv: this.flags["_csv"] ?? false });
+  }
+
+  async run() {
+    const client = new PrismaClient();
+    const args = this.getQueryArgs()
+    const result = await this.query(client, args);
+    this.outputQueryResult(result);
+  }
+}
