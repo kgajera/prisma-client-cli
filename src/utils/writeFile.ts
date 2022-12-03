@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { format } from "prettier";
 
 export const writeFileSafely = async (
   writeLocation: string,
